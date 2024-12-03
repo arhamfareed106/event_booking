@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Event Booking{% endblock %}</title>
+    {% load static %}
+    {% load tailwind_tags %}
+    {% tailwind_css %}
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="{% url 'home' %}" class="text-2xl font-bold text-primary">EventBook</a>
+                    </div>
+                    <div class="hidden md:ml-6 md:flex md:space-x-8">
+                        <a href="{% url 'event_list' %}" class="inline-flex items-center px-1 pt-1 text-gray-900">Events</a>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'dashboard' %}" class="inline-flex items-center px-1 pt-1 text-gray-900">Dashboard</a>
+                            <a href="{% url 'booking_list' %}" class="inline-flex items-center px-1 pt-1 text-gray-900">My Bookings</a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    {% if user.is_authenticated %}
+                        <!-- Notification Bell -->
+                        <button class="relative p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                            <span class="sr-only">View notifications</span>
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                            </svg>
+                            <span id="notification-badge" class="hidden absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-xs flex items-center justify-center text-white">0</span>
+                        </button>
+                        <!-- User Dropdown -->
+                        <div class="ml-3 relative">
+                            <div>
+                                <button type="button" class="max-w-xs bg-gray-800 rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
+                                    <span class="sr-only">Open user menu</span>
+                                    <img class="h-8 w-8 rounded-full" src="{% static 'images/default-avatar.png' %}" alt="">
+                                </button>
+                            </div>
+                            <div class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-gray-700 ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1" id="user-menu">
+                                <a href="{% url 'dashboard' %}" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600" role="menuitem">Dashboard</a>
+                                <a href="{% url 'booking_list' %}" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600" role="menuitem">My Bookings</a>
+                                <form method="post" action="{% url 'logout' %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-600" role="menuitem">Sign out</button>
+                                </form>
+                            </div>
+                        </div>
+                        <a href="{% url 'profile' %}" class="text-gray-900">{{ user.username }}</a>
+                        <a href="{% url 'logout' %}" class="ml-4 btn-secondary">Logout</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn-primary">Login</a>
+                        <a href="{% url 'register' %}" class="ml-4 btn-secondary">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+        {% if messages %}
+            <div class="messages mb-8">
+                {% for message in messages %}
+                    <div class="p-4 mb-4 rounded-lg {% if message.tags == 'error' %}bg-red-100 text-red-700{% elif message.tags == 'success' %}bg-green-100 text-green-700{% else %}bg-blue-100 text-blue-700{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="bg-white shadow-lg mt-auto">
+        <div class="max-w-7xl mx-auto py-6 px-4">
+            <p class="text-center text-gray-600">&copy; 2024 EventBook. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- WebSocket Connection for Real-time Notifications -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const userMenuButton = document.getElementById('user-menu-button');
+            const userMenu = document.getElementById('user-menu');
+
+            if (userMenuButton && userMenu) {
+                userMenuButton.addEventListener('click', function() {
+                    const expanded = userMenuButton.getAttribute('aria-expanded') === 'true';
+                    userMenuButton.setAttribute('aria-expanded', !expanded);
+                    userMenu.classList.toggle('hidden');
+                });
+            }
+
+            {% if user.is_authenticated %}
+            // WebSocket connection for real-time notifications
+            const notificationBadge = document.getElementById('notification-badge');
+            const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
+            const ws_path = ws_scheme + '://' + window.location.host + '/ws/notifications/';
+            const socket = new WebSocket(ws_path);
+
+            socket.onmessage = function(e) {
+                const data = JSON.parse(e.data);
+                if (data.type === 'notification') {
+                    notificationBadge.textContent = data.count;
+                    notificationBadge.classList.remove('hidden');
+                }
+            };
+
+            socket.onclose = function(e) {
+                console.error('Notification socket closed unexpectedly');
+            };
+            {% endif %}
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

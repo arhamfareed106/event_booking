@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}My Bookings - EventBook{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <div class="bg-gray-800 rounded-lg shadow-xl p-6">
+        <h1 class="text-2xl font-bold text-white mb-6">My Bookings</h1>
+
+        {% if bookings %}
+            <div class="space-y-6">
+                {% for booking in bookings %}
+                    <div class="bg-gray-700 rounded-lg p-4 hover:bg-gray-600 transition-colors duration-200">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h2 class="text-xl font-semibold text-white">{{ booking.event.title }}</h2>
+                                <p class="text-gray-300">{{ booking.event.start_time|date:"F j, Y, g:i a" }}</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="px-3 py-1 rounded-full text-sm 
+                                    {% if booking.status == 'confirmed' %}bg-green-500 text-white
+                                    {% elif booking.status == 'pending' %}bg-yellow-500 text-white
+                                    {% elif booking.status == 'cancelled' %}bg-red-500 text-white
+                                    {% endif %}">
+                                    {{ booking.status|title }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <p class="text-gray-400">Tickets</p>
+                                <p class="text-white">{{ booking.number_of_tickets }}</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-400">Total Price</p>
+                                <p class="text-white">${{ booking.total_price }}</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-400">Booking Date</p>
+                                <p class="text-white">{{ booking.booking_date|date:"F j, Y" }}</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 flex justify-end space-x-4">
+                            <a href="{% url 'booking_detail' pk=booking.id %}" 
+                               class="inline-flex items-center px-4 py-2 border border-gray-600 text-sm font-medium rounded-md text-gray-300 hover:text-white hover:bg-gray-600">
+                                View Details
+                            </a>
+                            {% if booking.status == 'pending' %}
+                                <form method="POST" action="{% url 'cancel_booking' pk=booking.id %}" class="inline">
+                                    {% csrf_token %}
+                                    <button type="submit" 
+                                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700">
+                                        Cancel Booking
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-12">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-300">No bookings found</h3>
+                <p class="mt-1 text-sm text-gray-400">Get started by booking an event.</p>
+                <div class="mt-6">
+                    <a href="{% url 'events' %}" 
+                       class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                        Browse Events
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}Book Event - {{ event.title }} - EventBook{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto py-8 px-4">
+    <div class="bg-gray-800 rounded-lg shadow-xl p-6">
+        <h1 class="text-2xl font-bold text-white mb-6">Book Event</h1>
+        
+        <!-- Event Details -->
+        <div class="mb-8">
+            <div class="bg-gray-700 rounded-lg p-4">
+                <h2 class="text-xl font-semibold text-white mb-2">{{ event.title }}</h2>
+                <p class="text-gray-300 mb-2">{{ event.description }}</p>
+                <div class="grid grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <p class="text-gray-400">Date & Time</p>
+                        <p class="text-white">{{ event.start_time|date:"F j, Y, g:i a" }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-400">Price per Ticket</p>
+                        <p class="text-white">${{ event.price }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-400">Location</p>
+                        <p class="text-white">{{ event.location }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-400">Available Tickets</p>
+                        <p class="text-white">{{ event.capacity }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Booking Form -->
+        <form method="POST" class="space-y-6">
+            {% csrf_token %}
+            <div>
+                <label for="number_of_tickets" class="block text-sm font-medium text-gray-300">Number of Tickets</label>
+                <div class="mt-1 relative rounded-md shadow-sm">
+                    <input type="number" 
+                           name="number_of_tickets" 
+                           id="number_of_tickets" 
+                           min="1" 
+                           max="{{ event.capacity }}"
+                           value="1"
+                           class="block w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                           required>
+                </div>
+            </div>
+
+            <!-- Total Price Calculator -->
+            <div class="bg-gray-700 rounded-lg p-4">
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-300">Total Price:</span>
+                    <span class="text-xl font-bold text-white">$<span id="total-price">{{ event.price }}</span></span>
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-4">
+                <a href="{% url 'event_detail' pk=event.id %}" 
+                   class="inline-flex items-center px-4 py-2 border border-gray-600 text-sm font-medium rounded-md text-gray-300 bg-transparent hover:bg-gray-700">
+                    Cancel
+                </a>
+                <button type="submit"
+                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Proceed to Payment
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ticketInput = document.getElementById('number_of_tickets');
+        const totalPriceElement = document.getElementById('total-price');
+        const pricePerTicket = {{ event.price }};
+
+        function updateTotalPrice() {
+            const numberOfTickets = parseInt(ticketInput.value) || 0;
+            const totalPrice = (numberOfTickets * pricePerTicket).toFixed(2);
+            totalPriceElement.textContent = totalPrice;
+        }
+
+        ticketInput.addEventListener('input', updateTotalPrice);
+        updateTotalPrice();
+    });
+</script>
+{% endblock %}

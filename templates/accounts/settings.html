@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block title %}Settings - EventBook{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto py-8 px-4">
+    <div class="bg-gray-800 rounded-lg shadow-xl">
+        <!-- Settings Navigation -->
+        <div class="border-b border-gray-700">
+            <nav class="-mb-px flex" aria-label="Tabs">
+                <button class="text-indigo-500 border-indigo-500 whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm">
+                    Account Settings
+                </button>
+                <button class="text-gray-400 hover:text-gray-300 whitespace-nowrap py-4 px-6 border-b-2 border-transparent font-medium text-sm">
+                    Notifications
+                </button>
+                <button class="text-gray-400 hover:text-gray-300 whitespace-nowrap py-4 px-6 border-b-2 border-transparent font-medium text-sm">
+                    Privacy
+                </button>
+            </nav>
+        </div>
+
+        <!-- Account Settings -->
+        <div class="p-6 space-y-6">
+            <!-- Email Preferences -->
+            <div>
+                <h3 class="text-lg font-medium text-white">Email Notifications</h3>
+                <div class="mt-4 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label class="text-gray-300 font-medium">Booking Confirmations</label>
+                            <p class="text-gray-400 text-sm">Receive emails when your bookings are confirmed</p>
+                        </div>
+                        <button type="button" 
+                                class="bg-gray-700 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                role="switch" 
+                                aria-checked="true">
+                            <span class="translate-x-5 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-indigo-500 shadow ring-0 transition duration-200 ease-in-out"></span>
+                        </button>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label class="text-gray-300 font-medium">Event Reminders</label>
+                            <p class="text-gray-400 text-sm">Get reminded about upcoming events</p>
+                        </div>
+                        <button type="button" 
+                                class="bg-gray-700 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                role="switch" 
+                                aria-checked="true">
+                            <span class="translate-x-5 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-indigo-500 shadow ring-0 transition duration-200 ease-in-out"></span>
+                        </button>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label class="text-gray-300 font-medium">Marketing Emails</label>
+                            <p class="text-gray-400 text-sm">Receive updates about new features and events</p>
+                        </div>
+                        <button type="button" 
+                                class="bg-gray-700 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                role="switch" 
+                                aria-checked="false">
+                            <span class="translate-x-0 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Password Change -->
+            <div class="pt-6 border-t border-gray-700">
+                <h3 class="text-lg font-medium text-white">Change Password</h3>
+                <form class="mt-4 space-y-4">
+                    <div>
+                        <label for="current_password" class="block text-sm font-medium text-gray-300">Current Password</label>
+                        <input type="password" name="current_password" id="current_password" 
+                               class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+
+                    <div>
+                        <label for="new_password" class="block text-sm font-medium text-gray-300">New Password</label>
+                        <input type="password" name="new_password" id="new_password" 
+                               class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+
+                    <div>
+                        <label for="confirm_password" class="block text-sm font-medium text-gray-300">Confirm New Password</label>
+                        <input type="password" name="confirm_password" id="confirm_password" 
+                               class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button type="submit" 
+                                class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors duration-200">
+                            Change Password
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Delete Account -->
+            <div class="pt-6 border-t border-gray-700">
+                <h3 class="text-lg font-medium text-white">Delete Account</h3>
+                <p class="mt-1 text-sm text-gray-400">
+                    Once you delete your account, you will lose all data associated with it.
+                </p>
+                <div class="mt-4">
+                    <button type="button" 
+                            class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-200">
+                        Delete Account
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    // Toggle switch functionality
+    document.querySelectorAll('[role="switch"]').forEach(button => {
+        button.addEventListener('click', function() {
+            const isChecked = this.getAttribute('aria-checked') === 'true';
+            this.setAttribute('aria-checked', !isChecked);
+            const span = this.querySelector('span');
+            if (isChecked) {
+                span.classList.remove('translate-x-5', 'bg-indigo-500');
+                span.classList.add('translate-x-0', 'bg-white');
+            } else {
+                span.classList.remove('translate-x-0', 'bg-white');
+                span.classList.add('translate-x-5', 'bg-indigo-500');
+            }
+        });
+    });
+</script>
+{% endblock %}
+
+{% endblock %}

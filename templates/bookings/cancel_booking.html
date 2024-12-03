@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Cancel Booking - EventBook{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto py-8 px-4">
+    <div class="bg-gray-800 rounded-lg shadow-xl p-6">
+        <div class="text-center">
+            <svg class="mx-auto h-12 w-12 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+            
+            <h2 class="mt-4 text-xl font-bold text-white">Cancel Booking</h2>
+            <p class="mt-2 text-gray-300">Are you sure you want to cancel your booking for:</p>
+            
+            <div class="mt-4 bg-gray-700 rounded-lg p-4">
+                <h3 class="text-lg font-semibold text-white">{{ booking.event.title }}</h3>
+                <p class="text-gray-300 mt-1">{{ booking.event.start_time|date:"F j, Y, g:i a" }}</p>
+                <div class="mt-2 grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-gray-400">Tickets</p>
+                        <p class="text-white">{{ booking.number_of_tickets }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-400">Total Price</p>
+                        <p class="text-white">${{ booking.total_price }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <p class="mt-4 text-sm text-gray-400">
+                This action cannot be undone. If you proceed, your booking will be cancelled and any payment will be refunded according to our refund policy.
+            </p>
+
+            <div class="mt-6 flex justify-center space-x-4">
+                <a href="{% url 'booking_detail' pk=booking.id %}" 
+                   class="inline-flex items-center px-4 py-2 border border-gray-600 text-sm font-medium rounded-md text-gray-300 hover:text-white hover:bg-gray-700">
+                    Keep Booking
+                </a>
+                <form method="POST" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" 
+                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700">
+                        Confirm Cancellation
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
